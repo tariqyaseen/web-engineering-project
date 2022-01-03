@@ -1,10 +1,9 @@
-# BIT302-Project
+#Web Engineering Project
 
-## Food4All
+## ECafe
 
-HELP University BIT302 (Software Engineering Assignment)
+International Islamic University Islamabad. Web Engineering (Software Engineering Assignment)
 Web-based application to handle online food delivery and purchase.
 
-Authors: Tan Zheliang B1400653, Wilson Chang Kai Mun B1500510
 
 > Just testing out README markdown
