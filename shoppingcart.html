@@ -1,0 +1,292 @@
+<?php
+  session_start();
+ ?>
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Food4All - Shopping Cart</title>
+	<link rel="icon" href="images/Icon.ico" type="image/x-icon">
+	<link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="js/jquery.min.js"></script>
+	<!-- Custom Theme files -->
+	<link href="css/style.css" rel="stylesheet" type="text/css" media="all" />
+	<!-- Custom Theme files -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script type="application/x-javascript">
+		addEventListener("load", function() {
+			setTimeout(hideURLbar, 0);
+		}, false);
+
+		function hideURLbar() {
+			window.scrollTo(0, 1);
+		}
+	</script>
+	<!--webfont-->
+	<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900,200italic,300italic,400italic,600italic,700italic,900italic' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Lobster+Two:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+	<!--Animation-->
+	<script src="js/wow.min.js"></script>
+	<link href="css/animate.css" rel='stylesheet' type='text/css' />
+	<script>
+		new WOW().init();
+	</script>
+	<script type="text/javascript" src="js/move-top.js"></script>
+	<script type="text/javascript" src="js/easing.js"></script>
+	<script type="text/javascript">
+		jQuery(document).ready(function($) {
+			$(".scroll").click(function(event) {
+				event.preventDefault();
+				$('html,body').animate({
+					scrollTop: $(this.hash).offset().top
+				}, 1200);
+			});
+		});
+	</script>
+	<script src="js/simpleCart.min.js">
+	</script>
+	<script src="js/mustache.js"></script>
+	<script>
+		simpleCart({
+			checkout: {
+				type: "SendForm" ,
+				url: "checkout.php",
+				method: "POST",
+				extra_data: {
+					item_thumb: 'test'
+				}
+			}
+		});
+
+		simpleCart({
+			cartColumns: [
+				{attr: "name", label: "Name"},
+				{view: 'image', attr: 'thumb', label:false},
+				{attr: "price", label: "Price", view: 'currency'},
+				{attr: "quantity", label: "Quantity"},
+				{attr: "total", label: "Total", view: 'currency'},
+				{view: "remove", text: "Remove", label: false}
+			]
+		});
+		// Configure EURO as currency
+		simpleCart.currency({
+			code: "MYR",
+			name: "Ringgit",
+			symbol: " RM ",
+			delimiter: ",",
+			decimal: ".",
+			after: false,
+			accuracy: 2
+		});
+	</script>
+	<script>
+		function removeFromCart(x) {
+			simpleCart.each(function(item, index) {
+				if (item.get('id') === x.id) {
+					item.remove();
+					$('.'+ x.id).remove();
+          location.reload();
+				}
+			});
+		}
+		function clearCart() {
+			$('.cart-header').remove();
+			location.reload();
+		}
+		function checkout(check) {
+			if (!check) {
+        alert("Please sign in first.");
+        window.location.replace("./login.html");
+      } else {
+        simpleCart.checkout();
+      }
+		}
+	</script>
+	<script id="tutorial-template" type="text/template">
+		{{^item}}
+	 	<div><h1>Shopping cart is empty</h1></div>
+	 	{{/item}}
+		{{#item}}
+		<div class="cart-header {{id}}">
+			<div class="close1" id={{id}} onClick={removeFromCart(this)}></div>
+			<div class="cart-sec">
+				<div class="cart-item cyc food-image">
+					<img class="img-responsive" src={{thumb}} class="img-responsive" alt="">
+				</div>
+				<div class="cart-item-info">
+					<h3>{{name}}<span></span></h3>
+					<ul class="qty">
+						<li><p>Price: RM{{price}}</p></li>
+					 	<li><p>Quantity: {{quantity}}</p></li>
+				 	</ul>
+				</div>
+			 <div class="clearfix"></div>
+		 	</div>
+	 	</div>
+	 	{{/item}}
+		<div class="Sub-total">
+			<h2>Grand-total price: RM{{grandtotal}}</h2>
+			<a class='checkout-btn' href='javascript:;' onclick={checkout(<?php
+      $check = isset($_SESSION['is_login']) ? 1 : 0;echo $check;?>)}>Checkout now</a>
+		</div>
+ 	</script>
+</head>
+
+<body>
+	<!-- header-section-starts -->
+	<div class="header">
+		<div class="container">
+			<div class="top-header">
+				<div class="logo">
+					<a href="index.html"><img src="images/logo.png" class="img-responsive" alt="" /></a>
+				</div>
+				<div class="queries">
+					<p>Questions? Call us!<span>+60125201314 </span><label>(10AM to 10PM)</label></p>
+				</div>
+				<div class="header-right">
+					<div class="cart box_1">
+						<a href="shoppingcart.html">
+							<h3> <span class="simpleCart_total"> $0.00 </span> (<span id="simpleCart_quantity" class="simpleCart_quantity"> 0 </span> items)<img src="images/bag.png" alt=""></h3>
+						</a>
+						<p><a href="javascript:;" onClick={clearCart()} class="simpleCart_empty">Empty cart</a></p>
+						<div class="clearfix"> </div>
+					</div>
+				</div>
+				<div class="clearfix"></div>
+			</div>
+		</div>
+		<div class="menu-bar">
+			<div class="container">
+				<div class="top-menu">
+					<ul>
+						<li><a href="index.html">Home</a></li>|
+						<li class="active"><a href="popular-restaurants.html">Popular Restaurants</a></li>|
+						<li><a href="contact.html">contact</a></li>
+						<div class="clearfix"></div>
+					</ul>
+				</div>
+				<div class="login-section">
+					<ul>
+						<?php
+               if (!isset($_SESSION['is_login'])){
+                 echo "<li><a href='login.html'>Log In</a></li>";
+                 echo "<li><h3>|</h3></li>";
+                 echo "<li><a href='register.html'>Register</a></li>";
+               }
+               else {
+                 echo "<li><a href='profile.php'>Logged in as ".$_SESSION['username']."</a></li>";
+                 echo "<li><h3>|</h3></li>";
+                 echo "<li><a href='signout.php'>Sign Out</a></li>";
+               }
+             ?>
+						<div class="clearfix"></div>
+					</ul>
+				</div>
+				<div class="clearfix"></div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- header-section-ends -->
+	<!-- content-section-starts -->
+	<!-- checkout -->
+	<div class="cart-items">
+		<div class="container">
+			<div id='shopping_cart'>
+				<script>
+					var cart = [];
+					var data = {};
+					simpleCart.load();
+					simpleCart.update();
+					if (simpleCart.quantity() > 0){
+						var newArray = [];
+						simpleCart.each(function(item, index){
+							var obj = {
+								index: index,
+								id: item.get('id'),
+								name: item.get('name'),
+								price: item.get('price'),
+								thumb: item.get('thumb'),
+								quantity: item.get('quantity')
+							};
+							newArray.push(obj);
+						});
+						var total = simpleCart.total();
+						var total = total.toFixed(2);
+						data = {item: newArray, grandtotal: total};
+					} else {
+						data = {grandtotal: 0.00}
+					}
+
+					var template = $("#tutorial-template").html();
+					// html: '<div ...>\n<h1 ...>{{title }}<h1>\n</div>'
+
+					var html = Mustache.render(template, data);
+					$("#shopping_cart").append(html);
+				</script>
+			</div>
+		</div>
+	</div>
+	<!-- checkout -->
+	<div class="contact-section" id="contact">
+		<div class="container">
+			<div class="contact-section-grids">
+				<div class="col-md-3 contact-section-grid wow fadeInLeft" data-wow-delay="0.4s">
+					<h4>Site Links</h4>
+					<ul>
+						<li><i class="point"></i></li>
+						<li class="data"><a href="aboutUs.html">About Us</a></li>
+					</ul>
+					<ul>
+						<li><i class="point"></i></li>
+						<li class="data"><a href="contact.html">Contact Us</a></li>
+					</ul>
+					<ul>
+						<li><i class="point"></i></li>
+						<li class="data"><a href="privacyPolicy.html">Privacy Policy</a></li>
+					</ul>
+					<ul>
+						<li><i class="point"></i></li>
+						<li class="data"><a href="terms.html">Terms of Use</a></li>
+					</ul>
+				</div>
+				<div class="clearfix"></div>
+			</div>
+		</div>
+	</div>
+	<script>
+		if (simpleCart.quantity() == 0) {
+			$('.Sub-total').css('display', "none");
+		}
+	</script>
+	<!-- content-section-ends -->
+	<!-- footer-section-starts -->
+	<div class="footer">
+		<div class="container">
+			<p class="wow fadeInLeft" data-wow-delay="0.4s">&copy; 2017 All rights Reserved | Food4All</p>
+		</div>
+	</div>
+	<!-- footer-section-ends -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+			/*
+							var defaults = {
+					  			containerID: 'toTop', // fading element id
+								containerHoverID: 'toTopHover', // fading element hover id
+								scrollSpeed: 1200,
+								easingType: 'linear'
+					 		};
+							*/
+
+			$().UItoTop({
+				easingType: 'easeOutQuart'
+			});
+
+		});
+	</script>
+	<a href="#" id="toTop" style="display: block;"> <span id="toTopHover" style="opacity: 1;"> </span></a>
+</body>
+
+</html>
